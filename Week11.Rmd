@@ -1,0 +1,73 @@
+---
+title: "New York Times Recommender System"
+author: "Gavriel Steinmetz-Silber"
+date: "2023-11-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Objectives
+
+Your task is to analyze an existing recommender system that you find interesting.  You should:
+1. Perform a Scenario Design analysis. Consider whether it makes sense for your selected recommender system to perform scenario design twice, once for the organization (e.g. Amazon.com) and once for the organization's customers.
+
+2. Attempt to reverse engineer what you can about the site, from the site interface and any available information that you can find on the Internet or elsewhere.
+
+3.Include specific recommendations about how to improve the site's recommendation capabilities going forward. 
+
+## Analysis
+
+I'll be analyzing the New York Times' recommender system. I'm fairly familiar with at least one user's experience since the New York Times is my main source of news. I'll also be relying on an article the Times published about their own recommender system: https://archive.nytimes.com/open.blogs.nytimes.com/2015/08/11/building-the-next-new-york-times-recommendation-engine/
+
+### Scenario Design Analysis
+
+In this section, I'll perform a scenario design analysis for the New York Times' customers. I'll note here that it's certainly worthwhile for them to conduct a similar analysis on behalf of the organization since they may totally distinct  goals, e.g. increasing revenue and customer loyalty. However, as Bruce D. Temkin points out ("Scenario Design:  A Disciplined Approach to Customer Experience”), it is the customer perspective that is typically neglected and therefore the perspective that I'll focus on here. Scenario Design Analysis involves answering three questions:
+
+#### Who are your target users?
+
+Let's craft a few personas:
+
+1. Older, white, college-educated, wealthy liberal Americans (see (https://www.pewresearch.org/politics/2012/09/27/section-4-demographics-and-political-views-of-news-audiences/ although only 33% are >= 50) . 
+2. Younger people (<30) compose 32% of regular readers and they're also a great demographic for advertisers
+3. Non-Americans, but English speaking (especially Canada and the UK)
+
+#### What are your users' goals?
+
+1. Readers want to read articles that are relevant to their own lives. For example, someone from Boston is more likely to be interested in stories about Boston than stories about other cities.
+2. Readers want to gain knowledge about the world. The Times is not a tabloid, and readers seek in-depth analysis. 
+3. As the Pew Research demonstrates, most users prefer non-political reporting (whether or not that's in fact possible is a separate question). 
+4. But readers also want to be able to hold people in power accountable.
+5. In terms of experience, readers want to read articles of particular lengths depending on their attention span, schedule, and so on. 
+
+#### How can you help them accomplish these goals? 
+
+1. Encourage them to share what is relevant to their lives and recommend such articles. Or, determine patterns of their readership to deduce what interests them.
+2. Invest in the quality of stories, including by hiring the best reporters.
+3. Do not over-hire from one end of the political spectrum, and have rigorous review processes to decrease bias levels.
+4. Allocate resources to investigative journalism. Establish a culture of accountability and integrity to mitigate the risk of stories being swept under the rug. 
+5. Determine preferred article length, recommend accordingly.
+
+### Reverse Engineering
+
+Some of the aforementioned goals are not easily or interestingly reverse-engineered--I'll address them briefly. Certainly, it is prestigious to work at the Times and so they likely do hire very talented reporters. The Times likely does not do a great job with being perceived as apolitical--they're widely considered left of center. The Times does have many investigative journalism stories every year, and reporters at the Times were awarded the Pulitzer Prize for Investigative Reporting three times over the past ten years.
+
+More interesting for our purposes are the first and final points from earlier. Namely, to help users achieve their goals, the Times ought to recommend articles that are relevant, interesting, and of a digestible format. When I open the home page of the Times, some of the articles are visible to all (specifically the major stories), but some of the articles I see on the home page are not those that others would see. The Times accomplishes this using an algorithm based on Collaborative Topic Modeling. 
+
+The algorithm models every article as a combination of topics. This is done using "Latent Dirichlet Allocation," which learns the topics of articles based on individual terms co-occurring. The resulting topics are intentionally broad (e.g. "Middle East", "Film," and "Healthcare). This is easier said than done; the referents of words are not always obvious since, for example, words can be used figuratively. The algorithm accounts for this by adjusting based on readers' behavior. For example, if the word "bedfellow" is used, but readers tended to read political articles, then the algorithm will adjust this article closer to "Politics." So this is actually a hybrid approach between content modeling and taking into account reading patterns. 
+
+Readers are also modeled on the topics that interest them the most. After all, they must be if recommendations are a matter of matching between articles' topics and readers' preferred topics. At first pass, the Times notes, you might want to simply average all the topics of articles that a reader reads. However, readers click on articles by accident or perhaps read an article and end up disappointed. As such, they use a "back-off" approach which assumes readers didn't like 10% of the articles they read. This allows for a more conservative understanding of readers while also potentially introducing readers to topics they may not have otherwise been exposed to. 
+
+## Conclusion and recommmendations
+
+In this document, I've performed a Scenario Design Analysis on the New York Times' customers. This analysis consisted of defining users, their goals, and how the Times can help them achieve these goals. I then discussed how the Times recommends articles--this helps users achieve a number of their goals. This recommender system is based off Collaborative Topic Modeling, where articles are seen as having a number of topics and readers are considered as interested in certain topics (although the readers are modeled somewhat conservatively). 
+
+I have a few recommendations for the Times to improve their recommender system:
+
+1. There are probably different ways people engage with articles. Some may read all articles they click on, while others may read but a small fraction. This can probably be calculated based on a consistent scroll speed. Articles that appear to actually be read should have a much weightier role in determining the topics a reader is interested in. 
+
+2. Again, it's quite hard to establish whether someone's actually read something they clicked on. Sharing the article should also be especially significant in establishing readers' preferences.
+
+3. Consider asking readers to occasionally rate articles to optimize the algorithm. 
